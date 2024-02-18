@@ -21,7 +21,8 @@ const Register = ({ navigation }) => {
         uid: credential.user.uid,
         email: email,
         displayName: username,
-        phn: generatePhonenumber()
+        phn: generatePhonenumber(),
+        contacts: []
     })
 
     setPassword(""); setUsername(""); setEmail("");
