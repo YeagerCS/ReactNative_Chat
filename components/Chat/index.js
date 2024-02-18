@@ -1,11 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { View, ScrollView, TextInput, Button, Text, TouchableOpacity } from 'react-native';
 import { addDoc, arrayUnion, collection, getDocs, onSnapshot, orderBy, query, updateDoc, where } from 'firebase/firestore';
-import { styles } from '../../styles/styles';
 import { firestore } from '../Firebase';
 import { useAuth } from '../../hooks/FirebaseUser/useAuth';
 import uuid from "react-native-uuid"
 import { useRoute } from '@react-navigation/native';
+import { useTheme } from '../../contexts/ThemeContext';
+import { dynamicStyles } from '../../styles/styles';
 
 const Chat = ({ navigation }) => {
   const messagesEndRef = useRef(null);
@@ -13,12 +14,15 @@ const Chat = ({ navigation }) => {
   const [newMessage, setNewMessage] = useState('');
   const [usernames, setUsernames] = useState({})
   const user = useAuth();
+  const { theme } = useTheme()
+  const styles = dynamicStyles(theme)
 
   const route = useRoute()
   const { chatId, contact, contactUid } = route.params;
 
   useEffect(() => {
     scrollToBottom();
+    console.log(theme);
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -106,11 +110,11 @@ const Chat = ({ navigation }) => {
             </View>
             <View style={styles.container}>
                 <View style={styles.chatContainer}>
-                    <ScrollView style={{padding:10}} ref={messagesEndRef}>
+                    <ScrollView style={{paddingHorizontal:10}} ref={messagesEndRef}>
                         {messages && messages.map((message) => (
                         <View key={message.id} style={{ flexDirection: 'column', alignItems: user.uid === message.sender ? 'flex-end' : 'flex-start', marginBottom: 10 }}>
-                            <Text>{user.uid === message.sender ? "You" : contact.name}</Text>
-                            <View style={{ backgroundColor: user.uid === message.sender ? '#2ecc71' : '#3498db', borderRadius: 10, padding: 10, maxWidth: '70%' }}>
+                            <Text style={{color: theme.color}}>{user.uid === message.sender ? "You" : contact.name}</Text>
+                            <View style={{ backgroundColor: user.uid === message.sender ? theme.ownMessageColor : theme.chatMessageColor, borderRadius: 10, padding: 10, maxWidth: '70%' }}>
                             <Text>{message.text}</Text>
                             </View>
                         </View>
@@ -123,6 +127,7 @@ const Chat = ({ navigation }) => {
                         onChangeText={(text) => setNewMessage(text)}
                         style={{...styles.formControl, flex: 1}}
                         onPressIn={scrollToBottom}
+                        placeholderTextColor={theme.transparentColor}
                         />
                         <TouchableOpacity style={styles.sendButton} onPress={sendMessage}>
                             <Text style={styles.sendButtonText}>Send</Text>

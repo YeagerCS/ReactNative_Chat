@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity } from 'react-native';
-import { styles } from '../../styles/styles';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { auth } from '../Firebase';
 import { Link } from '@react-navigation/native';
+import { useTheme } from '../../contexts/ThemeContext';
+import { dynamicStyles } from '../../styles/styles';
 
 const Login = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { theme } = useTheme()
+  const styles = dynamicStyles(theme)
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,22 +27,24 @@ const Login = ({ navigation }) => {
       <Text style={styles.heading}>Login</Text>
       <View style={styles.form}>
         <View style={styles.formGroup}>
-          <Text>Email address</Text>
+          <Text style={{color: theme.color}}>Email address</Text>
           <TextInput
             style={styles.formControl}
             placeholder="Enter email"
             value={email}
+            placeholderTextColor={theme.transparentColor}
             onChangeText={(text) => setEmail(text)}
           />
         </View>
 
         <View style={styles.formGroup}>
-          <Text>Password</Text>
+          <Text style={{color: theme.color}}>Password</Text>
           <TextInput
             style={styles.formControl}
             placeholder="Password"
             secureTextEntry={true}
             value={password}
+            placeholderTextColor={theme.transparentColor}
             onChangeText={(text) => setPassword(text)}
           />
         </View>

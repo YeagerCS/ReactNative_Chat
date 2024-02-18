@@ -2,12 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, Modal, Touchable } from 'react-native';
 import { collection, addDoc, getDocs, query, where, updateDoc, arrayUnion, onSnapshot } from 'firebase/firestore';
 import { auth, firestore } from '../Firebase';
-import { styles } from '../../styles/styles';
 import { PREFIX, useAuth } from '../../hooks/FirebaseUser/useAuth';
 import { signOut } from 'firebase/auth';
 import uuid from "react-native-uuid"
 import * as SecureStore from "expo-secure-store"
 import { useNavigation } from '@react-navigation/native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { useTheme } from '../../contexts/ThemeContext';
+import { dynamicStyles } from '../../styles/styles';
 
 const Dashboard = () => {
   const [contacts, setContacts] = useState([]);
@@ -17,6 +19,8 @@ const Dashboard = () => {
   const [selfContact, setSelfContact] = useState(null)
   const user = useAuth()
   const navigation = useNavigation()
+  const { theme, toggleTheme } = useTheme()
+  const styles = dynamicStyles(theme)
 
   const fetchContacts = async () => {
     if(user){
@@ -45,8 +49,13 @@ const Dashboard = () => {
         return;
     }
     fetchContacts();
-    getSelfUser();
   }, [user]);
+
+  useEffect(() => {
+    if(user){
+        getSelfUser();
+    }
+  }, [])
 
   useEffect(() => {
     if(user){
@@ -146,16 +155,19 @@ const Dashboard = () => {
                 <Text style={styles.headerText}>Contacts</Text>
                 <Text style={styles.contactPhn}>{selfContact && selfContact.phn}</Text>
             </View>
-            <View style={{display: 'flex', flexDirection: "row"}}>
-                <TouchableOpacity style={{width: 40, height: 40}} onPress={openModal}>
+            <View style={{display: 'flex', flexDirection: "row", gap: 25}}>
+                <TouchableOpacity onPress={toggleTheme}>
+                    <Text style={styles.headerText}>{theme.symbol}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={openModal}>
                     <Text style={{...styles.headerText, fontSize: 25}}>+</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.headerButton} onPress={handleLogout}>
-                    <Text style={{color: 'white'}}>Logout</Text>
+                <TouchableOpacity onPress={handleLogout} style={{...styles.sendButton, padding: 5}}>
+                        <Text style={styles.sendButtonText}>Logout</Text>
                 </TouchableOpacity>
             </View>
         </View>
-        <View>
+        <ScrollView style={styles.contactScrollView}>
             {contacts && contacts.map(contact => (
                 <TouchableOpacity key={contact.id} onPress={() => createChat(contact)}>
                     <View style={styles.contactItem}>
@@ -164,7 +176,7 @@ const Dashboard = () => {
                     </View>
                 </TouchableOpacity>
             ))}
-        </View>
+        </ScrollView>
 
         <Modal animationType="slide" transparent={true} visible={isModalVisible}>
             <View style={styles.modalContainer}>
@@ -178,24 +190,28 @@ const Dashboard = () => {
                     </View>
 
                     <View style={styles.formGroup}>
-                        <Text>Contact Name</Text>
+                        <Text style={{color: theme.color}}>Contact Name</Text>
                         <TextInput
                             placeholder="Enter contact name"
                             value={newContactName}
                             onChangeText={(text) => setNewContactName(text)}
+                            placeholderTextColor={theme.transparentColor}
                             style={styles.modalInput}
                         />
                     </View>
                     <View style={styles.formGroup}>
-                        <Text>Phone Number</Text>
+                        <Text style={{color: theme.color}}>Phone Number</Text>
                         <TextInput
                             placeholder="Enter phone number"
                             value={newPhoneNumber}
                             onChangeText={(text) => setNewPhoneNumber(text)}
+                            placeholderTextColor={theme.transparentColor}
                             style={styles.modalInput}
                         />
                     </View>
-                    <Button title="Add Contact" onPress={addContact}/>
+                    <TouchableOpacity onPress={addContact} style={styles.sendButton}>
+                        <Text style={styles.sendButtonText}>Add Contact</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
         </Modal>

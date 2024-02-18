@@ -4,11 +4,15 @@ import Chat from "../components/Chat";
 import Login from "../components/Authentication/Login";
 import Register from "../components/Authentication/Register";
 import Dashboard from "../components/Chat/Dashboard";
+import { useTheme } from "../contexts/ThemeContext";
+import { dynamicStyles } from "../styles/styles";
 
 
 const Stack = createStackNavigator();
 
 export default function Router() {
+    
+
     return(
         <NavigationContainer>
             <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown: false}}>
