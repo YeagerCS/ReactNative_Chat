@@ -35,27 +35,26 @@ const Dashboard = () => {
     }
   };
 
-  const getSelfUser = async () => {
-    const ownUserSnapShpt = await getDocs(
-        query(collection(firestore, "users"), where("uid", "==", user.uid))
-    )
-    const ownUserContact = ownUserSnapShpt.docs.map(doc => doc.data())[0];
-    setSelfContact(ownUserContact)
-  }
+  
 
   useEffect(() => {
     if(!user){
         navigation.navigate("Login")
         return;
     }
+
+    const getSelfUser = async () => {
+        const ownUserSnapShpt = await getDocs(
+            query(collection(firestore, "users"), where("uid", "==", user.uid))
+        )
+        const ownUserContact = ownUserSnapShpt.docs.map(doc => doc.data())[0];
+        console.log(ownUserContact);
+        setSelfContact(ownUserContact)
+    }
+
+    getSelfUser();
     fetchContacts();
   }, [user]);
-
-  useEffect(() => {
-    if(user){
-        getSelfUser();
-    }
-  }, [])
 
   useEffect(() => {
     if(user){

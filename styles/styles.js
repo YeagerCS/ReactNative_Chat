@@ -183,6 +183,7 @@ export const dynamicStyles = (theme) => {
       borderWidth: 1,
       marginBottom: 10,
       padding: 8,
+      color: theme.color
     },
     modalHeader:{
       display: 'flex',
